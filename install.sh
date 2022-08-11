@@ -125,4 +125,10 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 kubectl get nodes -o wide
 
+sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.23.3/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
+sudo chmod +x /usr/local/bin/calicoctl
+sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.23.3/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
+sudo chmod +x /usr/local/bin/kubectl-calico
+kubectl calico -h
+
 echo "[+] all done"
