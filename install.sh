@@ -22,8 +22,7 @@ EOF
 
 sudo sysctl --system
 
-sudo apt-get update
-sudo apt-get install -y iptables arptables ebtables
+sudo apt-get update && sudo apt-get install -y iptables arptables ebtables
 sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
 sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 sudo update-alternatives --set arptables /usr/sbin/arptables-legacy
@@ -56,7 +55,9 @@ sudo rm /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 echo "[i] kubeadm init"
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address 192.168.56.210
+sudo apt-get update && sudo apt-get install -y jq
+eth0ip=$(ip -j a | jq -r '.[] | select(.ifname == "enp0s8") | .addr_info[] | select(.family == "inet") | .local')
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address $eth0ip
 
 mkdir -p $HOME/.kube
 sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -67,68 +68,56 @@ for i in {10..1}; do
   sleep 1
 done
 
-c1=$(kubectl get pods -A | grep -c "Running")
-c2=$(kubectl get pods -A | grep -c "Pending")
+c1=$(kubectl get pods -A | grep -c "Running") || true
+c2=$(kubectl get pods -A | grep -c "Pending") || true
 while [ $c1 -ne 5 ] || [ $c2 -ne 2 ]
 do
   sleep 1
   echo "[i] waiting coredns pending"
-  c1=$(kubectl get pods -A | grep -c "Running")
-  c2=$(kubectl get pods -A | grep -c "Pending")
+  c1=$(kubectl get pods -A | grep -c "Running") || true
+  c2=$(kubectl get pods -A | grep -c "Pending") || true
 done
 sleep 3
 echo "[+] coredns pending done"
 
-kubectl create -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
+# https://projectcalico.docs.tigera.io/getting-started/kubernetes/quickstart
 
-c1=$(kubectl get pods -A | grep -c "Running")
-c2=$(kubectl get pods -A | grep -c "Pending")
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+
+c1=$(kubectl get pods -A | grep -c "Running") || true
+c2=$(kubectl get pods -A | grep -c "Pending") || true
 while [ $c1 -ne 6 ] || [ $c2 -ne 2 ]
 do
   sleep 1
   echo "[i] waiting tigera-operator running"
-  c1=$(kubectl get pods -A | grep -c "Running")
-  c2=$(kubectl get pods -A | grep -c "Pending")
+  c1=$(kubectl get pods -A | grep -c "Running") || true
+  c2=$(kubectl get pods -A | grep -c "Pending") || true
 done
 sleep 3
 echo "[+] tigera-operator running done"
 
-kubectl create -f https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/custom-resources.yaml
 
-c1=$(kubectl get pods -A | grep -c "Running")
-c2=$(kubectl get pods -A | grep -c "Pending")
-while [ $c1 -ne 10 ] || [ $c2 -ne 1 ]
+c1=$(kubectl get pods -A | grep -c "Running") || true
+c2=$(kubectl get pods -A | grep -c "Pending") || true
+while [ $c1 -ne 14 ] || [ $c2 -ne 0 ]
 do
   sleep 1
   echo "[i] waiting custom-resources running"
-  c1=$(kubectl get pods -A | grep -c "Running")
-  c2=$(kubectl get pods -A | grep -c "Pending")
+  c1=$(kubectl get pods -A | grep -c "Running") || true
+  c2=$(kubectl get pods -A | grep -c "Pending") || true
 done
 sleep 3
 echo "[+] custom-resources running done"
 
 kubectl taint node --all node-role.kubernetes.io/control-plane:NoSchedule-
 
-c1=$(kubectl get pods -A | grep -c "Running")
-c2=$(kubectl get pods -A | grep -c "Pending")
-while [ $c1 -ne 11 ] || [ $c2 -ne 0 ]
-do
-  sleep 1
-  echo "[i] waiting calico running"
-  c1=$(kubectl get pods -A | grep -c "Running")
-  c2=$(kubectl get pods -A | grep -c "Pending")
-done
-sleep 3
-echo "[+] calico running done"
-
-kubectl taint nodes --all node-role.kubernetes.io/master-
-
 kubectl get nodes -o wide
 
-sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.23.3/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
+sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
 sudo chmod +x /usr/local/bin/calicoctl
-sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.23.3/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
+sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
 sudo chmod +x /usr/local/bin/kubectl-calico
 kubectl calico -h
 
-echo "[+] all done"
+echo "[+] All Done"

@@ -13,6 +13,6 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
-    bash /vagrant/install.sh
+    bash -eu /vagrant/install.sh
   SHELL
 end
