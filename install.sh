@@ -2,6 +2,12 @@
 
 cd $(dirname $0)
 
+cmd=$(basename $0)
+if [ $# -ne 1 ]; then
+  echo "Usage: $cmd address" 1>&2
+  exit 1
+fi
+
 echo "[i] install helm"
 cd ~ ; curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 ; chmod 700 get_helm.sh ; ./get_helm.sh
 
@@ -61,9 +67,7 @@ sudo rm /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 echo "[i] kubeadm init"
-sudo apt-get update && sudo apt-get install -y jq
-eth0ip=$(ip -j a | jq -r '.[] | select(.ifname == "enp0s8") | .addr_info[] | select(.family == "inet") | .local')
-sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address $eth0ip
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address $1
 
 mkdir -p $HOME/.kube
 sudo cp -f /etc/kubernetes/admin.conf $HOME/.kube/config
