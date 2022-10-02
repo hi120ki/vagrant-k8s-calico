@@ -5,7 +5,9 @@ cd $(dirname $0)
 echo "[i] install helm"
 cd ~ ; curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 ; chmod 700 get_helm.sh ; ./get_helm.sh
 
-curl "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
+echo "[i] add bash alias"
+# https://github.com/ahmetb/kubectl-aliases
+curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
 echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
 echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
 
@@ -84,8 +86,8 @@ done
 sleep 3
 echo "[+] coredns pending done"
 
+echo "[i] install calico"
 # https://projectcalico.docs.tigera.io/getting-started/kubernetes/quickstart
-
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
 
 c1=$(kubectl get pods -A | grep -c "Running") || true
@@ -114,13 +116,17 @@ done
 sleep 3
 echo "[+] custom-resources running done"
 
+echo "[i] taint node"
 kubectl taint node --all node-role.kubernetes.io/control-plane:NoSchedule-
 
+echo "[i] node info"
 kubectl get nodes -o wide
 
-sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
+echo "[i] install calicoctl"
+# https://projectcalico.docs.tigera.io/maintenance/clis/calicoctl/install
+sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
 sudo chmod +x /usr/local/bin/calicoctl
-sudo curl -s -L https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
+sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
 sudo chmod +x /usr/local/bin/kubectl-calico
 kubectl calico -h
 
