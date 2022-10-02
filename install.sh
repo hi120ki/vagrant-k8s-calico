@@ -5,6 +5,10 @@ cd $(dirname $0)
 echo "[i] install helm"
 cd ~ ; curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 ; chmod 700 get_helm.sh ; ./get_helm.sh
 
+curl "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
+echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
+echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
+
 echo "[i] network config"
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
