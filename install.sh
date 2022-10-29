@@ -16,7 +16,7 @@ echo "[i] add shell alias"
 curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
 echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
 echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
-if test -f "~/.config/fish/config.fish"; then
+if [ -f ~/.config/fish/config.fish ]; then
   curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish" -o ~/.kubectl_aliases.fish
   echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >> ~/.config/fish/config.fish
 fi
