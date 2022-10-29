@@ -16,6 +16,8 @@ echo "[i] add bash alias"
 curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
 echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
 echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
+curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish" -o ~/.kubectl_aliases.fish
+echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >> ~/.config/fish/config.fish
 
 echo "[i] network config"
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
