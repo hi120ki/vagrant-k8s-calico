@@ -11,13 +11,15 @@ fi
 echo "[i] install helm"
 cd ~ ; curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 ; chmod 700 get_helm.sh ; ./get_helm.sh
 
-echo "[i] add bash alias"
+echo "[i] add shell alias"
 # https://github.com/ahmetb/kubectl-aliases
 curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
 echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
 echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
-curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish" -o ~/.kubectl_aliases.fish
-echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >> ~/.config/fish/config.fish
+if test -f "~/.config/fish/config.fish"; then
+  curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish" -o ~/.kubectl_aliases.fish
+  echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >> ~/.config/fish/config.fish
+fi
 
 echo "[i] network config"
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
