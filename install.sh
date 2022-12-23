@@ -96,7 +96,7 @@ echo "[+] coredns pending done"
 
 echo "[i] install calico"
 # https://projectcalico.docs.tigera.io/getting-started/kubernetes/quickstart
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml
 
 c1=$(kubectl get pods -A | grep -c "Running") || true
 c2=$(kubectl get pods -A | grep -c "Pending") || true
@@ -110,7 +110,7 @@ done
 sleep 3
 echo "[+] tigera-operator running done"
 
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/custom-resources.yaml
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml
 
 c1=$(kubectl get pods -A | grep -c "Running") || true
 c2=$(kubectl get pods -A | grep -c "Pending") || true
@@ -132,9 +132,9 @@ kubectl get nodes -o wide
 
 echo "[i] install calicoctl"
 # https://projectcalico.docs.tigera.io/maintenance/clis/calicoctl/install
-sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
+sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.5/calicoctl-linux-amd64 -o /usr/local/bin/calicoctl
 sudo chmod +x /usr/local/bin/calicoctl
-sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.1/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
+sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.5/calicoctl-linux-amd64 -o /usr/local/bin/kubectl-calico
 sudo chmod +x /usr/local/bin/kubectl-calico
 kubectl calico -h
 
