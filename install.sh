@@ -138,4 +138,21 @@ sudo curl -fsSL https://github.com/projectcalico/calico/releases/download/v3.24.
 sudo chmod +x /usr/local/bin/kubectl-calico
 kubectl calico -h
 
+echo "[i] enable hostpath provisioner"
+sudo snap install yq
+sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml | \
+  yq -e '.spec.containers[].command += ["--enable-hostpath-provisioner=true"]' | \
+  sudo tee /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+echo "[i] add storageclass"
+cat <<EOF | kubectl apply -f -
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: standard
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/host-path
+EOF
+
 echo "[+] All Done"
