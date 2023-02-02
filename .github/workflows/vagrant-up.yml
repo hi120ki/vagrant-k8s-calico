@@ -8,19 +8,11 @@ on:
 
 jobs:
   vagrant-up:
-    runs-on: macos-10.15
+    runs-on: macos-12
     timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v3
-        with:
-          python-version: "3.x"
-          architecture: "x64"
-
-      - name: install ansible
-        run: pip install -U ansible
 
       - name: Run vagrant up
         run: vagrant up
