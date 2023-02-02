@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
-  config.vm.box_version = "20221213.0.0"
+  config.vm.box_version = "20230128.0.0"
 
   config.vm.network "private_network", ip: "192.168.56.210"
 
@@ -13,6 +13,7 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
   end
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
+    sudo snap install yq
     bash -eu /vagrant/install.sh 192.168.56.210
   SHELL
 end
