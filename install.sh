@@ -9,16 +9,19 @@ if [ $# -ne 1 ]; then
 fi
 
 echo "[i] install helm"
-cd ~ ; curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 ; chmod 700 get_helm.sh ; ./get_helm.sh
+cd ~
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
 
 echo "[i] add shell alias"
 # https://github.com/ahmetb/kubectl-aliases
 curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases" -o ~/.kubectl_aliases
-echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >> ~/.bashrc
-echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >> ~/.bashrc
+echo '[ -f ~/.kubectl_aliases ] && source ~/.kubectl_aliases' >>~/.bashrc
+echo 'function kubectl() { echo "+ kubectl $@">&2; command kubectl $@; }' >>~/.bashrc
 if [ -f ~/.config/fish/config.fish ]; then
   curl -fsSL "https://raw.githubusercontent.com/ahmetb/kubectl-aliases/master/.kubectl_aliases.fish" -o ~/.kubectl_aliases.fish
-  echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >> ~/.config/fish/config.fish
+  echo 'test -f ~/.kubectl_aliases.fish && source ~/.kubectl_aliases.fish' >>~/.config/fish/config.fish
 fi
 
 echo "[i] network config"
@@ -48,7 +51,7 @@ echo "[i] install containerd"
 sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
     $(lsb_release -cs) \
     stable"
 sudo apt-get update && sudo apt-get install -y containerd.io
@@ -139,8 +142,8 @@ sudo chmod +x /usr/local/bin/kubectl-calico
 kubectl calico -h
 
 echo "[i] enable hostpath provisioner"
-sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml | \
-  yq -e '.spec.containers[].command += ["--enable-hostpath-provisioner=true"]' | \
+sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml |
+  yq -e '.spec.containers[].command += ["--enable-hostpath-provisioner=true"]' |
   sudo tee /etc/kubernetes/manifests/kube-controller-manager.yaml
 
 echo "[i] add storageclass"
